@@ -32,7 +32,7 @@ public class MainActivity extends Activity {
             e.printStackTrace();
         }
         String[] data = new String[] { Browser.BookmarkColumns.TITLE,
-                Browser.BookmarkColumns.URL, Browser.BookmarkColumns.DATE };
+                Browser.BookmarkColumns.URL, Browser.BookmarkColumns.DATE, Browser.BookmarkColumns.VISITS, Browser.BookmarkColumns.CREATED};
         Uri uriCustom = Uri.parse("content://com.android.chrome.browser/bookmarks");
         String browserHistory = Browser.BookmarkColumns.BOOKMARK + " = 0"; // 0 = history, 1= bookmark
         Cursor mycur = this.managedQuery(uriCustom, data,browserHistory, null, null);
@@ -40,9 +40,12 @@ public class MainActivity extends Activity {
         mycur.moveToFirst();
 
         ArrayList<String> array = new ArrayList<>();
+        array.add("Title" + "\t" + "Url" + "\t" + "updated_at" + "\t" + "visits" + "\t" + "created_at");
         String title = "";
         String url = "";
-        String date = "";
+        String updated_at = "";
+        String visits = "";
+        String created_at = "";
 
         if (mycur.moveToFirst() && mycur.getCount() > 0) {
             while (!mycur.isAfterLast()) {
@@ -50,9 +53,13 @@ public class MainActivity extends Activity {
                         .getColumnIndex(Browser.BookmarkColumns.TITLE));
                 url = mycur.getString(mycur
                         .getColumnIndex(Browser.BookmarkColumns.URL));
-                date = mycur.getString(mycur
+                updated_at = mycur.getString(mycur
                         .getColumnIndex(Browser.BookmarkColumns.DATE));
-                array.add(title + "\t" + url + "\t" + getDate(Long.parseLong(date), "dd/MM/yyyy_hh:mm:ss" ));
+                visits = mycur.getString(mycur
+                        .getColumnIndex(Browser.BookmarkColumns.VISITS));
+                created_at = mycur.getString(mycur
+                        .getColumnIndex(Browser.BookmarkColumns.CREATED));
+                array.add(title + "\t" + url + "\t" + getDate(Long.parseLong(updated_at), "dd/MM/yyyy_hh:mm:ss" + "\t" + visits + "\t" + getDate(Long.parseLong(created_at), "dd/MM/yyyy_hh:mm:ss")));
 
                 mycur.moveToNext();
             }
