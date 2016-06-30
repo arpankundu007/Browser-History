@@ -52,7 +52,7 @@ public class MainActivity extends Activity {
                         .getColumnIndex(Browser.BookmarkColumns.URL));
                 date = mycur.getString(mycur
                         .getColumnIndex(Browser.BookmarkColumns.DATE));
-                array.add(title + " : " + url + " : " + getDate(Long.parseLong(date), "dd/MM/yyyy_hh:mm:ss" ));
+                array.add(title + "\t" + url + "\t" + getDate(Long.parseLong(date), "dd/MM/yyyy_hh:mm:ss" ));
 
                 mycur.moveToNext();
             }
