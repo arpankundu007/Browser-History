@@ -31,37 +31,37 @@ public class MainActivity extends Activity {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        String[] data = new String[] { Browser.BookmarkColumns.TITLE,
-                Browser.BookmarkColumns.URL, Browser.BookmarkColumns.DATE, Browser.BookmarkColumns.VISITS, Browser.BookmarkColumns.CREATED};
-        Uri uriCustom = Uri.parse("content://com.android.chrome.browser/bookmarks");
-        String browserHistory = Browser.BookmarkColumns.BOOKMARK + " = 0"; // 0 = history, 1= bookmark
-        Cursor mycur = this.managedQuery(uriCustom, data,browserHistory, null, null);
-        this.startManagingCursor(mycur);
-        mycur.moveToFirst();
-
+        Uri BOOKMARKS_URI = Uri.parse("content://com.android.chrome.browser/bookmarks");
+        String[] HISTORY_PROJECTION = new String[]{
+                "title",
+                "url",
+                "date",
+                "visits",
+                "created",
+                "bookmark"
+        };
+        String[] data = new String[] { HISTORY_PROJECTION[0],
+                HISTORY_PROJECTION[1], HISTORY_PROJECTION[2], HISTORY_PROJECTION[3], HISTORY_PROJECTION[4]};
+        String browserHistory = HISTORY_PROJECTION[5] + " = 0";
+        Cursor cursor = this.getContentResolver().query(BOOKMARKS_URI, data, browserHistory, null, null);
+        cursor.moveToFirst();
         ArrayList<String> array = new ArrayList<>();
-        array.add("Title" + "\t" + "Url" + "\t" + "updated_at" + "\t" + "visits" + "\t" + "created_at");
-        String title = "";
-        String url = "";
-        String updated_at = "";
-        String visits = "";
-        String created_at = "";
-
-        if (mycur.moveToFirst() && mycur.getCount() > 0) {
-            while (!mycur.isAfterLast()) {
-                title = mycur.getString(mycur
-                        .getColumnIndex(Browser.BookmarkColumns.TITLE));
-                url = mycur.getString(mycur
-                        .getColumnIndex(Browser.BookmarkColumns.URL));
-                updated_at = mycur.getString(mycur
-                        .getColumnIndex(Browser.BookmarkColumns.DATE));
-                visits = mycur.getString(mycur
-                        .getColumnIndex(Browser.BookmarkColumns.VISITS));
-                created_at = mycur.getString(mycur
-                        .getColumnIndex(Browser.BookmarkColumns.CREATED));
-                array.add(title + "\t" + url + "\t" + getDate(Long.parseLong(updated_at), "dd/MM/yyyy_hh:mm:ss" + "\t" + visits + "\t" + getDate(Long.parseLong(created_at), "dd/MM/yyyy_hh:mm:ss")));
-
-                mycur.moveToNext();
+        int count = 0;
+        if (cursor.moveToFirst() && cursor.getCount() > 0) {
+            while (!cursor.isAfterLast()) {
+                String title = cursor.getString(cursor
+                        .getColumnIndex(HISTORY_PROJECTION[0]));
+                String url = cursor.getString(cursor
+                        .getColumnIndex(HISTORY_PROJECTION[1]));
+                String date = cursor.getString(cursor
+                        .getColumnIndex(HISTORY_PROJECTION[2]));
+                String visits = cursor.getString(cursor
+                        .getColumnIndex(HISTORY_PROJECTION[3]));
+                String created = cursor.getString(cursor
+                        .getColumnIndex(HISTORY_PROJECTION[4]));
+                count++;
+                array.add(title + "\t" + url + "\t" + getDate(Long.parseLong(date), "dd/MM/yyyy_hh:mm:ss") + "\t" + visits + "\t" + getDate(Long.parseLong(created), "dd/MM/yyyy_hh:mm:ss"));
+                cursor.moveToNext();
             }
         }
         if (array.size() > 0) {
@@ -69,8 +69,8 @@ public class MainActivity extends Activity {
                 writeToFile(string + "\n");
                 Log.d("result ", string);
             }
-
         }
+        Log.v("Count:", ""+count);
     }
     public void writeToFile(String data){
         try {
